@@ -1,0 +1,17 @@
+{
+    "name": "danilocgsilva/ec2_wrapper",
+    "autoload": {
+        "psr-4": {
+            "Danilocgsilva\\Ec2Wrapper\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Danilo Carlos",
+            "email": "contact@danilocgsilva.me"
+        }
+    ],
+    "require": {
+        "aws/aws-sdk-php": "^3.300"
+    }
+}
