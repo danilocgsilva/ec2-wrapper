@@ -20,4 +20,9 @@ interface EC2RepositoryInterface
      * @return void
      */
     public function setRegion(string $region): self;
+
+    /**
+     * Creates an ec2 instance
+     */
+    public function create();
 }

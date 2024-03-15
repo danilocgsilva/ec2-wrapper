@@ -13,15 +13,27 @@ class EC2Repository implements EC2RepositoryInterface
     /** @var string */
     private string $region;
 
-    /** @inheritDoc */
-    public function list(): array
+    private readonly Ec2Client $ec2Client;
+
+    public function __construct()
     {
-        $ec2Client = new Ec2Client([
+        $this->ec2Client = new Ec2Client([
             'region' => $this->region,
             'version' => '2016-11-15',
             'profile' => 'default'
         ]);
-        $results = $ec2Client->describeInstances();
+
+        // $this->ec2Client = Ec2Client::factory([
+        //     'key' => 'key',
+        //     'secret' => 'secret',
+        //     'region' => 'region'
+        // ]);
+    }
+
+    /** @inheritDoc */
+    public function list(): array
+    {
+        $results = $this->ec2Client->describeInstances();
         
         return array_map(function ($entry) {
             $ec2 = new Ec2();
@@ -35,5 +47,10 @@ class EC2Repository implements EC2RepositoryInterface
     {
         $this->region = $region;
         return $this;
+    }
+
+    public function create()
+    {
+
     }
 }
