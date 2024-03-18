@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Danilocgsilva\EC2Wrapper;
-use Danilocgsilva\Interfaces\EC2Wrapper\EC2Interface;
+namespace Danilocgsilva\Ec2Wrapper;
 
-class Ec2 implements EC2Interface
+use Danilocgsilva\Ec2Wrapper\Interfaces\EC2Interface;
+
+class Ec2 implements Ec2Interface
 {
     /** @var string */
     private string $region;

@@ -12,6 +12,7 @@
         }
     ],
     "require": {
-        "aws/aws-sdk-php": "^3.300"
+        "aws/aws-sdk-php": "^3.300",
+        "ramsey/uuid": "^4.7"
     }
 }

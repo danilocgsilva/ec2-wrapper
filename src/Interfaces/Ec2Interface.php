@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Danilocgsilva\Interfaces\EC2Wrapper;
+namespace Danilocgsilva\Ec2Wrapper\Interfaces;
 
-interface EC2Interface
+interface Ec2Interface
 {
     /**
      * Set region for EC2 object
