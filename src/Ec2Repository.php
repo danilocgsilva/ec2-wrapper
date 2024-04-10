@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Danilocgsilva\Ec2Wrapper;
 
+use Danilocgsilva\Ec2Wrapper\Exceptions\MissingRegionException;
 use Danilocgsilva\Ec2Wrapper\Interfaces\Ec2RepositoryInterface;
 use Danilocgsilva\Ec2Wrapper\Ec2;
 use Aws\Ec2\Ec2Client;
 use Ramsey\Uuid\Uuid;
 use Danilocgsilva\Ec2Wrapper\Ec2RepositoryResults;
 use Aws\Result as AwsResult;
+use ReflectionProperty;
 
 class Ec2Repository implements Ec2RepositoryInterface
 {
@@ -21,6 +23,10 @@ class Ec2Repository implements Ec2RepositoryInterface
     /** @inheritDoc */
     public function list(): array
     {
+        if (!$this->checkClientInitialization()) {
+            throw new MissingRegionException();
+        }
+
         $results = $this->ec2Client->describeInstances();
         
         return array_map(function ($entry) {
@@ -90,9 +96,15 @@ class Ec2Repository implements Ec2RepositoryInterface
     }
 
     /** @inheritDoc */
-    function listSecurityGroups(): AwsResult
+    public function listSecurityGroups(): AwsResult
     {
         $results = $this->ec2Client->describeSecurityGroups();
         return $results;
+    }
+
+    private function checkClientInitialization(): bool
+    {
+        $clientInitialization = new ReflectionProperty($this, 'ec2Client');
+        return $clientInitialization->isInitialized($this);
     }
 }

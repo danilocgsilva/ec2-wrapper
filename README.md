@@ -1,0 +1,1 @@
+Note: have the key and secret from yout aws account, so you can access AWS services. The environment mus have the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY variables, so the code can fetch data to access your services.
