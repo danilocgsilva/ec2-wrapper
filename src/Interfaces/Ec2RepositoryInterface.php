@@ -25,6 +25,14 @@ interface Ec2RepositoryInterface
     public function setRegion(string $region): self;
 
     /**
+     * Set a profile, if the profile is setted on the environment
+     *
+     * @param string $profile
+     * @return self
+     */
+    public function setProfile(string $profile): self;
+
+    /**
      * Creates an ec2 instance
      */
     public function create(): void;

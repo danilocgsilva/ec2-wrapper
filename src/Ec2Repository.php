@@ -18,22 +18,24 @@ class Ec2Repository implements Ec2RepositoryInterface
     /** @var string */
     private string $region;
 
+    /** @var string */
+    private string $profile;
+
     private readonly Ec2Client $ec2Client;
 
     /** @inheritDoc */
     public function list(): array
     {
-        if (!$this->checkClientInitialization()) {
-            throw new MissingRegionException();
-        }
+        $this->resolveClient();
 
         $results = $this->ec2Client->describeInstances();
+        $reservations = $results->get('Reservations');
         
         return array_map(function ($entry) {
             $ec2 = new Ec2();
             $ec2->setRegion($this->region);
             return $ec2;
-        }, $results['Reservations']);
+        }, $reservations);
     }
 
     /** @inheritDoc */
@@ -41,10 +43,13 @@ class Ec2Repository implements Ec2RepositoryInterface
     {
         $this->region = $region;
 
-        $this->ec2Client = new Ec2Client([
-            'region' => $this->region,
-            'version' => '2016-11-15'
-        ]);
+        return $this;
+    }
+
+    /** @inheritDoc */
+    public function setProfile(string $profile): self
+    {
+        $this->profile = $profile;
 
         return $this;
     }
@@ -52,7 +57,9 @@ class Ec2Repository implements Ec2RepositoryInterface
     /** @inheritDoc */
     public function create(): void
     {
+        $this->resolveClient();
 
+        $this->ec2Client->createInstance();
     }
 
     /** @inheritDoc */
@@ -100,6 +107,34 @@ class Ec2Repository implements Ec2RepositoryInterface
     {
         $results = $this->ec2Client->describeSecurityGroups();
         return $results;
+    }
+
+    private function resolveClient(): void
+    {
+        if (!$this->checkClientInitialization()) {
+            $this->initializesClient();
+        }
+    }
+
+    private function initializesClient()
+    {
+        $region = $this->region ?? null;
+        $profile = $this->profile ?? null;
+    
+        if (empty($region)) {
+            throw new MissingRegionException();
+        }
+    
+        $clientConfig = [
+            'region' => $region,
+            'version' => '2016-11-15'
+        ];
+    
+        if (!empty($profile)) {
+            $clientConfig['profile'] = $profile;
+        }
+    
+        $this->ec2Client = new Ec2Client($clientConfig);
     }
 
     private function checkClientInitialization(): bool
