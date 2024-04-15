@@ -10,6 +10,8 @@ class Ec2 implements Ec2Interface
 {
     /** @var string */
     private string $region;
+
+    private string $instanceId;
     
     /** @inheritDoc */
     public function getRegion(): string
@@ -27,5 +29,19 @@ class Ec2 implements Ec2Interface
     public function getPublicId(): string
     {
         return "";
+    }
+
+    /** @inheritDoc */
+    public function setInstanceId(string $instanceId): self
+    {
+        $this->instanceId = $instanceId;
+
+        return $this;
+    }
+
+    /** @inheritDoc */
+    public function getInstanceId(): string
+    {
+        return $this->instanceId;
     }
 }

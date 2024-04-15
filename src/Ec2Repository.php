@@ -12,6 +12,7 @@ use Ramsey\Uuid\Uuid;
 use Danilocgsilva\Ec2Wrapper\Ec2RepositoryResults;
 use Aws\Result as AwsResult;
 use ReflectionProperty;
+use Danilocgsilva\Ec2Wrapper\Interfaces\Ec2TemplateInterface;
 
 class Ec2Repository implements Ec2RepositoryInterface
 {
@@ -34,6 +35,7 @@ class Ec2Repository implements Ec2RepositoryInterface
         return array_map(function ($entry) {
             $ec2 = new Ec2();
             $ec2->setRegion($this->region);
+            $ec2->setInstanceId($entry["Instances"][0]["InstanceId"]);
             return $ec2;
         }, $reservations);
     }
@@ -55,11 +57,19 @@ class Ec2Repository implements Ec2RepositoryInterface
     }
 
     /** @inheritDoc */
-    public function create(): void
+    public function create(Ec2TemplateInterface $ec2Template): void
     {
         $this->resolveClient();
 
-        $this->ec2Client->createInstance();
+        $result = $this->ec2Client->runInstances(array(
+            'ImageId'        => 'ami-0b660115243d1c4b6',
+            'MinCount'       => 1,
+            'MaxCount'       => 1,
+            'InstanceType'   => 't4g.nano',
+            'KeyName'        => $ec2Template->getKeyName(),
+            'SecurityGroupsIds' => $ec2Template->getSecurityGroupsIds(),
+            'SubnetId' => $ec2Template->getSubnetId()
+        ));
     }
 
     /** @inheritDoc */

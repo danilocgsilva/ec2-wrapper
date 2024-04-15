@@ -27,4 +27,18 @@ interface Ec2Interface
      * @return string
      */
     public function getPublicId(): string;
+
+    /**
+     * Sets the instance id
+     * 
+     * @return self
+     */
+    public function setInstanceId(string $instanceId): self;
+
+    /**
+     * Gets the instance id
+     *
+     * @return string
+     */
+    public function getInstanceId(): string;
 }

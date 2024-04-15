@@ -6,6 +6,7 @@ namespace Danilocgsilva\Ec2Wrapper\Interfaces;
 
 use Danilocgsilva\Ec2Wrapper\Ec2RepositoryResults;
 use Aws\Result as AwsResult;
+use Danilocgsilva\Ec2Wrapper\Interfaces\Ec2TemplateInterface;
 
 interface Ec2RepositoryInterface
 {
@@ -35,7 +36,7 @@ interface Ec2RepositoryInterface
     /**
      * Creates an ec2 instance
      */
-    public function create(): void;
+    public function create(Ec2TemplateInterface $ec2Template): void;
 
     /**
      * Create a security group
