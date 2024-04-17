@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Danilocgsilva\Ec2Wrapper;
 
 use Danilocgsilva\Ec2Wrapper\Exceptions\MissingRegionException;
+use Danilocgsilva\Ec2Wrapper\Exceptions\PoorEc2TemplateException;
 use Danilocgsilva\Ec2Wrapper\Interfaces\Ec2RepositoryInterface;
 use Danilocgsilva\Ec2Wrapper\Ec2;
 use Aws\Ec2\Ec2Client;
@@ -13,6 +14,7 @@ use Danilocgsilva\Ec2Wrapper\Ec2RepositoryResults;
 use Aws\Result as AwsResult;
 use ReflectionProperty;
 use Danilocgsilva\Ec2Wrapper\Interfaces\Ec2TemplateInterface;
+use Error;
 
 class Ec2Repository implements Ec2RepositoryInterface
 {
@@ -60,6 +62,9 @@ class Ec2Repository implements Ec2RepositoryInterface
     public function create(Ec2TemplateInterface $ec2Template): void
     {
         $this->resolveClient();
+        $this->validatesEc2Template($ec2Template);
+
+        // ami-0f58aa386a2280f35
 
         $result = $this->ec2Client->runInstances(array(
             'ImageId'        => 'ami-0b660115243d1c4b6',
@@ -151,5 +156,35 @@ class Ec2Repository implements Ec2RepositoryInterface
     {
         $clientInitialization = new ReflectionProperty($this, 'ec2Client');
         return $clientInitialization->isInitialized($this);
+    }
+
+    private function validatesEc2Template(Ec2Template $ec2Template)
+    {
+        $exceptionMessage = "";
+        $problemsCount = 0;
+        try {
+            $ec2Template->getKeyName();
+        } catch (Error) {
+            $problemsCount++;
+            $exceptionMessage .= "Problem " . $problemsCount . ": Missing the key name from template. ";
+        }
+
+        try {
+            $ec2Template->getSecurityGroupsIds();
+        } catch (Error) {
+            $problemsCount++;
+            $exceptionMessage .= "Problem " . $problemsCount . ": Missing security groups from template.";
+        }
+
+        try {
+            $ec2Template->getSubnetId();
+        } catch (Error) {
+            $problemsCount++;
+            $exceptionMessage .= "Problem " . $problemsCount . ": Missing subnet id from template.";    
+        }
+
+        if ($problemsCount > 0) {
+            throw new PoorEc2TemplateException($exceptionMessage);
+        }
     }
 }
